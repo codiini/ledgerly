@@ -14,7 +14,7 @@
         </div>
       </template>
 
-      <UTable :rows="customers" :columns="columns">
+      <UTable :rows="customerList" :columns="columns">
         <template #actions-data="{ row }">
           <UButton
             icon="i-heroicons-pencil"
@@ -26,7 +26,7 @@
             icon="i-heroicons-trash"
             color="gray"
             variant="ghost"
-            @click="deleteCustomer(row)"
+            @click="handleDelete(row.id)"
           />
         </template>
       </UTable>
@@ -59,7 +59,7 @@
             <UButton color="gray" @click="isEditModalOpen = false">
               Cancel
             </UButton>
-            <UButton color="primary" @click="updateCustomer">
+            <UButton color="primary" @click="saveCustomer">
               Save Changes
             </UButton>
           </div>
@@ -74,7 +74,7 @@
           <h3 class="text-lg font-bold">Add New Customer</h3>
         </template>
 
-        <UForm :state="newCustomer" class="space-y-4" @submit="createCustomer">
+        <UForm :state="newCustomer" class="space-y-4" @submit="saveCustomer">
           <UFormGroup label="Name" required>
             <UInput v-model="newCustomer.name" />
           </UFormGroup>
@@ -94,7 +94,7 @@
             <UButton color="gray" @click="isNewModalOpen = false">
               Cancel
             </UButton>
-            <UButton color="primary" @click="createCustomer">
+            <UButton color="primary" @click="saveCustomer">
               Create Customer
             </UButton>
           </div>
@@ -104,72 +104,87 @@
   </div>
 </template>
 
-<script setup>
-const customers = ref([
-  {
-    id: "C001",
-    name: "Alice Smith",
-    email: "alice.smith@example.com",
-    phone: "+2348123456969",
-    address: "456 High Street, Anytown, USA",
-    creditLimit: 10000.0,
-    paymentTerms: 30,
-    creditStatus: "active",
-    transactions: [
-      {
-        date: "2024-12-15",
-        description: "Initial Purchase",
-        amount: 5000.0,
-        daysOverdue: 0,
-      },
-      {
-        date: "2025-01-01",
-        description: "Partial Payment",
-        amount: -1000.0,
-        daysOverdue: 0,
-      },
-    ],
-  },
-  {
-    id: "C002",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+2348123456969",
-    address: "123 Main Street, Somewhere, USA",
-    creditLimit: 5000.0,
-    paymentTerms: 60,
-    creditStatus: "warning",
-    transactions: [
-      {
-        date: "2024-11-25",
-        description: "Bulk Order",
-        amount: 4500.0,
-        daysOverdue: 45,
-      },
-    ],
-  },
-  {
-    id: "C003",
-    name: "Sarah Johnson",
-    email: "sarah.j@example.com",
-    phone: "+2348123456969",
-    address: "789 Oak Road, Elsewhere, USA",
-    creditLimit: 15000.0,
-    paymentTerms: 45,
-    creditStatus: "suspended",
-    transactions: [
-      {
-        date: "2024-10-15",
-        description: "Equipment Purchase",
-        amount: 12000.0,
-        daysOverdue: 90,
-      },
-    ],
-  },
-]);
+<script setup lang="ts">
+import type { Customer } from "~/types/customers";
+
+const {
+  fetchCustomers,
+  customerList,
+  updateCustomer,
+  createCustomer,
+  deleteCustomer,
+} = useCustomers();
+// const customers = ref([
+//   {
+//     id: "C001",
+//     name: "Alice Smith",
+//     email: "alice.smith@example.com",
+//     phone: "+2348123456969",
+//     address: "456 High Street, Anytown, USA",
+//     creditLimit: 10000.0,
+//     paymentTerms: 30,
+//     creditStatus: "active",
+//     transactions: [
+//       {
+//         date: "2024-12-15",
+//         description: "Initial Purchase",
+//         amount: 5000.0,
+//         daysOverdue: 0,
+//       },
+//       {
+//         date: "2025-01-01",
+//         description: "Partial Payment",
+//         amount: -1000.0,
+//         daysOverdue: 0,
+//       },
+//     ],
+//   },
+//   {
+//     id: "C002",
+//     name: "John Doe",
+//     email: "john.doe@example.com",
+//     phone: "+2348123456969",
+//     address: "123 Main Street, Somewhere, USA",
+//     creditLimit: 5000.0,
+//     paymentTerms: 60,
+//     creditStatus: "warning",
+//     transactions: [
+//       {
+//         date: "2024-11-25",
+//         description: "Bulk Order",
+//         amount: 4500.0,
+//         daysOverdue: 45,
+//       },
+//     ],
+//   },
+//   {
+//     id: "C003",
+//     name: "Sarah Johnson",
+//     email: "sarah.j@example.com",
+//     phone: "+2348123456969",
+//     address: "789 Oak Road, Elsewhere, USA",
+//     creditLimit: 15000.0,
+//     paymentTerms: 45,
+//     creditStatus: "suspended",
+//     transactions: [
+//       {
+//         date: "2024-10-15",
+//         description: "Equipment Purchase",
+//         amount: 12000.0,
+//         daysOverdue: 90,
+//       },
+//     ],
+//   },
+// ]);
 const isEditModalOpen = ref(false);
 const isNewModalOpen = ref(false);
-const editingCustomer = ref({});
+const editingCustomer = ref<Customer>({
+  id: "",
+  name: "",
+  email: "",
+  phone: "",
+  address: "",
+});
 const newCustomer = ref({
   name: "",
   email: "",
@@ -194,22 +209,42 @@ const openNewCustomerModal = () => {
   isNewModalOpen.value = true;
 };
 
-const openEditModal = (customer) => {
+const openEditModal = (customer: Customer) => {
   editingCustomer.value = { ...customer };
   isEditModalOpen.value = true;
 };
 
-const createCustomer = async () => {
-  // Implement create logic here
+const handleDelete = async (id: string) => {
+  //set the deleting state of the customer with the id to true
+  customerList.value = customerList.value.map((customer: Customer) =>
+    customer.id === id ? { ...customer, deleting: true } : customer
+  );
+  await deleteCustomer(id);
+  //set to false
+  fetchCustomers();
+};
+
+const saveCustomer = async () => {
+  if (isEditModalOpen.value) {
+    updateCustomer({
+      data: editingCustomer.value,
+      id: editingCustomer.value.id,
+    });
+  } else {
+    createCustomer({
+      data: newCustomer.value,
+    });
+  }
+
   isNewModalOpen.value = false;
-};
-
-const deleteCustomer = async(customer) =>{
-  
-}
-
-const updateCustomer = async () => {
-  // Implement update logic here
   isEditModalOpen.value = false;
+  newCustomer.value = {
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+  };
 };
+
+onMounted(fetchCustomers);
 </script>
