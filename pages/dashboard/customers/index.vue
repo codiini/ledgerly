@@ -26,6 +26,9 @@
             icon="i-heroicons-trash"
             color="gray"
             variant="ghost"
+            :loading="
+              customerList.find((customer) => customer.id == row.id)?.deleting
+            "
             @click="handleDelete(row.id)"
           />
         </template>
@@ -105,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Customer } from "~/types/customers";
+import type { Customer } from "~/types/index";
 
 const {
   fetchCustomers,
@@ -136,42 +139,6 @@ const {
 //         description: "Partial Payment",
 //         amount: -1000.0,
 //         daysOverdue: 0,
-//       },
-//     ],
-//   },
-//   {
-//     id: "C002",
-//     name: "John Doe",
-//     email: "john.doe@example.com",
-//     phone: "+2348123456969",
-//     address: "123 Main Street, Somewhere, USA",
-//     creditLimit: 5000.0,
-//     paymentTerms: 60,
-//     creditStatus: "warning",
-//     transactions: [
-//       {
-//         date: "2024-11-25",
-//         description: "Bulk Order",
-//         amount: 4500.0,
-//         daysOverdue: 45,
-//       },
-//     ],
-//   },
-//   {
-//     id: "C003",
-//     name: "Sarah Johnson",
-//     email: "sarah.j@example.com",
-//     phone: "+2348123456969",
-//     address: "789 Oak Road, Elsewhere, USA",
-//     creditLimit: 15000.0,
-//     paymentTerms: 45,
-//     creditStatus: "suspended",
-//     transactions: [
-//       {
-//         date: "2024-10-15",
-//         description: "Equipment Purchase",
-//         amount: 12000.0,
-//         daysOverdue: 90,
 //       },
 //     ],
 //   },

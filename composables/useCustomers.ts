@@ -1,4 +1,5 @@
-import type { Customer } from "~/types/customers";
+import type { Customer } from "~/types";
+const TABLE_NAME = 'customers'
 
 export const useCustomers = () => {
   const supabase = useSupabaseClient();
@@ -16,12 +17,12 @@ export const useCustomers = () => {
   const fetchCustomers = async (state = false) => {
     loadingStates.fetch = state;
     let { data, error } = await supabase
-      .from("customers")
+      .from(`${TABLE_NAME}`)
       .select("*")
       .eq("merchant_id", user.value?.id)
       .order("name");
     loadingStates.fetch = false;
-    //set a deleting state on each course
+    //set a deleting state on each customer
     customerList.value = data as Customer[];
 
     customerList.value?.map((customer: Customer) => ({
@@ -49,7 +50,7 @@ export const useCustomers = () => {
   }) => {
     loadingStates.save = true;
     const { error } = await supabase
-      .from("customers")
+      .from(`${TABLE_NAME}`)
       .update(data)
       .eq("id", id)
       .eq("merchant_id", user.value?.id)
@@ -74,7 +75,7 @@ export const useCustomers = () => {
   const createCustomer = async ({ data }: { data: Partial<Customer> }) => {
     loadingStates.save = true;
     const { data: response, error } = await supabase
-      .from("customers")
+      .from(`${TABLE_NAME}`)
       .insert(data)
       .select();
     loadingStates.save = false;
@@ -99,7 +100,7 @@ export const useCustomers = () => {
   const deleteCustomer = async (id: string) => {
     loadingStates.delete = true;
     const { error } = await supabase
-      .from("customers")
+      .from(`${TABLE_NAME}`)
       .delete()
       .eq("id", id)
       .eq("merchant_id", user.value?.id);
