@@ -79,18 +79,18 @@
               />
             </UFormGroup>
 
-            <UFormGroup label="Quantity" required>
-              <UInput v-model="currentItem.quantity" type="number" />
+            <UFormGroup label="Unit Price">
+              <UInput v-model="currentItem.unit_price" type="number" />
             </UFormGroup>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <UFormGroup label="Reorder Level">
-              <UInput v-model="currentItem.reorder_level" type="number" />
+            <UFormGroup label="Quantity" required>
+              <UInput v-model="currentItem.quantity" type="number" />
             </UFormGroup>
 
-            <UFormGroup label="Days Per Reorder">
-              <UInput v-model="currentItem.reorder_timeline" type="number" />
+            <UFormGroup label="Reorder Level">
+              <UInput v-model="currentItem.reorder_level" type="number" />
             </UFormGroup>
           </div>
         </UForm>

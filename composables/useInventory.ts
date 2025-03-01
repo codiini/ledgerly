@@ -2,9 +2,9 @@ import type { Inventory } from "~/types";
 const TABLE_NAME = "inventory";
 
 const ERROR_MESSAGES = {
-    create: "Error while adding customer information",
-    read: "Error fetching customer list",
-    update: "Error while updating customer information"
+    create: "Error while adding Inventory data",
+    read: "Error fetching Inventory list",
+    update: "Error while updating Inventory data"
 }
 
 export const useInventory = () => {
@@ -31,8 +31,8 @@ export const useInventory = () => {
     //set a deleting state on each inventory item
     inventoryList.value = data as Inventory[];
 
-    inventoryList.value?.map((customer: Inventory) => ({
-      ...customer,
+    inventoryList.value?.map((item: Inventory) => ({
+      ...item,
       deleting: false,
     }));
 
@@ -97,7 +97,7 @@ export const useInventory = () => {
     }
     fetchInventory();
     toast.add({
-      title: "Customer Created Successfully!",
+      title: "Item created successfully!",
       icon: "i-heroicons-check-badge-solid",
     });
     return data[0];
@@ -114,7 +114,7 @@ export const useInventory = () => {
     loadingStates.delete = false;
     if (error) {
       return toast.add({
-        title: "Error deleting customer",
+        title: "Error deleting item",
         description:
           "There was an error deleting the selected inventory item. Please try again later.",
         icon: "i-heroicons-exclamation-circle",
