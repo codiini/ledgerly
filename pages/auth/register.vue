@@ -12,14 +12,11 @@
         class="space-y-4"
         @submit.prevent="handleRegister"
       >
-        <UFormGroup label="Business Name" name="businessName">
-          <template #help>
-            <div class="flex items-center gap-x-1 text-xs text-gray-300">
-              <UIcon name="i-heroicons-information-circle" class="w-4 h-4" />
-              Enter your Business Name
-            </div>
-          </template>
-          <UInput v-model="formState.businessName" placeholder="Dangote Inc." />
+        <UFormGroup label="First Name" name="firstName">
+          <UInput v-model="formState.firstName" placeholder="John" />
+        </UFormGroup>
+        <UFormGroup label="Last Name" name="lastName">
+          <UInput v-model="formState.lastName" placeholder="Doe" />
         </UFormGroup>
   
         <UFormGroup label="Email" name="email">
@@ -53,7 +50,7 @@
         >
       </UForm>
       <template #footer>
-        <p class="text-center text-sm text-gray-600">
+        <p class="text-center text-sm text-gray-400">
           Already have an account?
           <NuxtLink to="/auth/login" class="text-primary-600 hover:underline"
             >Log in</NuxtLink
@@ -78,7 +75,8 @@
   });
   
   const formState = reactive({
-    businessName: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
   });
@@ -87,9 +85,12 @@
   const showPassword = ref(false);
   
   const schema = z.object({
-    businessName: z
+    firstName: z
       .string()
-      .min(1, "Business name is required"),
+      .min(3, "First name is required"),
+    lastName: z
+      .string()
+      .min(3, "Last name is required"),
     email: z.string().email("Invalid email address"),
     password: z
       .string()
@@ -111,8 +112,8 @@
       email: formState.email,
       options: {
         data: {
-          firstname: formState.businessName.split(" ")[0],
-          surname: formState.businessName.split(" ")[1],
+          firstName: formState.firstName,
+          lastName: formState.lastName,
         },
         emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
@@ -137,7 +138,8 @@
   
   const clearForm = () => {
     Object.assign(formState, {
-      businessName: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
     });

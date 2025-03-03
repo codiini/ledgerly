@@ -50,7 +50,7 @@
         >
       </UForm>
       <template #footer>
-        <p class="text-center text-sm text-gray-600">
+        <p class="text-center text-sm text-gray-400">
           Don't have an account?
           <NuxtLink to="/auth/register" class="text-primary-600 hover:underline"
             >Register</NuxtLink
