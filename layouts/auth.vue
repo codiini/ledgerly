@@ -6,7 +6,7 @@
       <div
         class="h-20 w-full flex items-center justify-center text-black dark:text-white font-black text-2xl"
       >
-        DebtWise
+        UseLedgerly
       </div>
       <slot />
     </div>

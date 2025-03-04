@@ -100,7 +100,7 @@ const getStatusColor = (status) => {
 };
 
 useHead({
-  title: "DebtWise | Dashboard",
+  title: "UseLedgerly | Dashboard",
 });
 </script>
 
