@@ -71,7 +71,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "UseLedgerly | Log In",
+  title: "Ledgerly | Log In",
 });
 
 const isLoading = ref(false);

@@ -100,7 +100,7 @@ const getStatusColor = (status) => {
 };
 
 useHead({
-  title: "UseLedgerly | Dashboard",
+  title: "Ledgerly | Dashboard",
 });
 </script>
 

@@ -1,12 +1,24 @@
 <template>
   <aside
-    class="fixed flex flex-col w-64 shadow-lg lg:mr-64 pt-10 h-full px-2 bg-gray-50 dark:bg-gray-700 z-50"
+    class="fixed flex flex-col w-64 shadow-lg lg:mr-64 pt-5 h-full px-2 bg-gray-50 dark:bg-gray-900 z-50"
     :class="{
       'fixed w-64 shadow-lg z-40 transition-transform duration-300 ease-in-out transform': true,
       '-translate-x-full lg:translate-x-0': !isOpen,
       'translate-x-0': isOpen,
     }"
   >
+    <div class="flex items-center justify-start pb-2">
+      <img
+        class="block dark:hidden"
+        src="@/assets/logo-dark.svg"
+        alt="Ledgerly logo"
+      />
+      <img
+        class="hidden dark:block"
+        src="@/assets/logo-light.svg"
+        alt="Ledgerly logo"
+      />
+    </div>
     <UVerticalNavigation
       @click="emit('close')"
       :ui="{

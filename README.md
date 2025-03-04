@@ -1,4 +1,4 @@
-# UseLedgerly
+# Ledgerly
 
 This repository contains code for my school coursework (Java and Web Development)
 

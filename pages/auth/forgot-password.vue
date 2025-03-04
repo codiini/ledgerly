@@ -48,7 +48,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "UseLedgerly | Forgot Password",
+  title: "Ledgerly | Forgot Password",
 });
 
 const formState = reactive({
