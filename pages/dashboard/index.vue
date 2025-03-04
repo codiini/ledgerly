@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import { useFormatCurrency } from "#imports";
 const supabase = useSupabaseClient();
 
 const totalOutstanding = ref(0);
@@ -7,12 +8,16 @@ const overdueCount = ref(0);
 const lowStockCount = ref(0);
 const numberOfCustomers = ref(0);
 
+const user = useSupabaseUser();
+
 const { creditSales, fetchCreditSales } = useSales();
+const { formatCurrency } = useFormatCurrency();
 
 onMounted(async () => {
   const { data: outstandingData } = await supabase
     .from("credit_sales")
     .select("total_amount, paid_amount")
+    .eq("merchant_id", user.value?.id)
     .neq("status", "paid");
 
   totalOutstanding.value =
@@ -24,13 +29,15 @@ onMounted(async () => {
   const { count: overdue } = await supabase
     .from("credit_sales")
     .select("*", { count: "exact" })
+    .eq("merchant_id", user.value?.id)
     .eq("status", "overdue");
 
   overdueCount.value = overdue || 0;
 
   const { data: inventoryData } = await supabase
     .from("inventory")
-    .select("quantity, reorder_level");
+    .select("quantity, reorder_level")
+    .eq("merchant_id", user.value?.id);
 
   lowStockCount.value =
     inventoryData?.filter((item) => item.quantity < item.reorder_level)
@@ -38,6 +45,7 @@ onMounted(async () => {
 
   const { count: customerCount } = await supabase
     .from("customers")
+    .eq("merchant_id", user.value?.id)
     .select("*", { count: "exact" });
 
   numberOfCustomers.value = customerCount || 0;

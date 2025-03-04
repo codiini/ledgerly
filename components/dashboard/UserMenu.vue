@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center">
       <UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
         <UButton color="white" variant="outline">
-          <UAvatar :alt="joinName" size="sm"></UAvatar>
+          <UAvatar :alt="userInitials" size="sm"></UAvatar>
         </UButton>
       </UDropdown>
     </div>
@@ -13,7 +13,6 @@
 <script setup lang="ts">
 const toast = useToast();
 const client = useSupabaseClient();
-const user = useSupabaseUser();
 
 const logout = async () => {
   const { error } = await client.auth.signOut();
@@ -46,8 +45,5 @@ const items = [
   ],
 ];
 
-const joinName = computed(
-  () =>
-    `${user.value?.user_metadata.firstname} ${user.value?.user_metadata.surname}`
-);
+const { userInitials } = useUser();
 </script>

@@ -17,7 +17,7 @@
         <div
           class="text-lg lg:text-3xl dark:text-white text-gray-900 font-semibold"
         >
-          Hello {{ computedUserName }}!
+          Hello {{ userFirstName }}!
         </div>
         <UserMenu class="ml-auto" />
       </div>
@@ -29,10 +29,9 @@
 <script setup>
 import UserMenu from "@/components/dashboard/UserMenu.vue";
 
-const user = useSupabaseUser();
-const computedUserName = computed(() => user.value?.user_metadata.firstname);
-
 const isSidebarOpen = ref(false);
+
+const { userFirstName } = useUser();
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;

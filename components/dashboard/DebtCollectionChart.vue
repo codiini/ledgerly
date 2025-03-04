@@ -84,6 +84,7 @@ const getLast6Months = () => {
   return months;
 };
 
+const user = useSupabaseUser();
 // Fetch data and prepare chart
 const fetchChartData = async () => {
   const months = getLast6Months();
@@ -111,6 +112,7 @@ const fetchChartData = async () => {
     const { data: salesData } = await supabase
       .from("credit_sales")
       .select("total_amount")
+      .eq("merchant_id", user.value?.id)
       .gte("created_at", startOfMonth)
       .lte("created_at", endOfMonth);
 
@@ -124,15 +126,22 @@ const fetchChartData = async () => {
     // Get total payments for the month
     const { data: paymentsData } = await supabase
       .from("payments")
-      .select("amount")
+      .select(
+        `amount, credit_sales (
+      merchant_id
+      )
+      `
+      )
       .gte("payment_date", startOfMonth)
       .lte("payment_date", endOfMonth);
 
     const totalPayments =
-      paymentsData?.reduce(
-        (sum, payment) => sum + parseFloat(payment.amount),
-        0
-      ) || 0;
+      paymentsData?.reduce((sum, payment) => {
+        if (payment.credit_sales.merchant_id === user.value?.id) {
+          return sum + parseFloat(payment.amount);
+        }
+        return sum;
+      }, 0) || 0;
     collectionData.push(totalPayments);
   }
 

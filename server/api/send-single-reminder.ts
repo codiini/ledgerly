@@ -43,9 +43,15 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const message = `Dear ${sale.customers.name}, your payment of $${
-    (sale.total_amount - sale.paid_amount).toFixed(2)
-  } was due on ${new Date(sale.due_date).toLocaleDateString()}. Please make the payment as soon as possible.`
+  const amountDue = sale.total_amount - sale.paid_amount
+  const formattedAmount = `${currencySymbol}${amountDue.toFixed(2)}`
+  const formattedDate = new Date(sale.due_date).toLocaleDateString()
+  
+  const message = `Dear ${sale.customers.name}, your payment of ${formattedAmount} was due on ${formattedDate}. Please make the payment as soon as possible.`
+
+  // const message = `Dear ${sale.customers.name}, your payment of $${
+  //   (sale.total_amount - sale.paid_amount).toFixed(2)
+  // } was due on ${new Date(sale.due_date).toLocaleDateString()}. Please make the payment as soon as possible.`
 
   try {
     await client.messages.create({

@@ -7,6 +7,7 @@
           color="primary"
           @click="sendReminders"
           :loading="isSending"
+          disabled
           icon="i-heroicons-envelope"
         >
           Send Reminders
@@ -223,12 +224,16 @@
 const supabase = useSupabaseClient();
 const toast = useToast();
 
+const { formatCurrency } = useFormatCurrency();
+
 const overduePayments = ref([]);
 const reminderHistory = ref([]);
 const customerReminderHistory = ref([]);
 const selectedCustomer = ref(null);
 const isViewingHistory = ref(false);
 const isSending = ref(false);
+
+const user = useSupabaseUser();
 
 // Fetch overdue payments
 const fetchOverduePayments = async () => {
@@ -248,6 +253,7 @@ const fetchOverduePayments = async () => {
       `
     )
     .eq("status", "overdue")
+    .eq("merchant_id", user.value.id)
     .order("due_date");
 
   if (data) {
@@ -290,6 +296,7 @@ const fetchReminderHistory = async () => {
         )
       `
     )
+    .eq("merchant_id", user.value.id)
     .order("sent_at", { ascending: false })
     .limit(20);
 
