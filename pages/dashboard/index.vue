@@ -1,97 +1,76 @@
 <script setup>
 import { ref } from "vue";
+const supabase = useSupabaseClient();
+
+const totalOutstanding = ref(0);
+const overdueCount = ref(0);
+const lowStockCount = ref(0);
+const numberOfCustomers = ref(0);
+
+const { creditSales, fetchCreditSales } = useSales();
+
+onMounted(async () => {
+  const { data: outstandingData } = await supabase
+    .from("credit_sales")
+    .select("total_amount, paid_amount")
+    .neq("status", "paid");
+
+  totalOutstanding.value =
+    outstandingData?.reduce(
+      (acc, curr) => acc + (curr.total_amount - curr.paid_amount),
+      0
+    ) || 0;
+
+  const { count: overdue } = await supabase
+    .from("credit_sales")
+    .select("*", { count: "exact" })
+    .eq("status", "overdue");
+
+  overdueCount.value = overdue || 0;
+
+  const { data: inventoryData } = await supabase
+    .from("inventory")
+    .select("quantity, reorder_level");
+
+  lowStockCount.value =
+    inventoryData?.filter((item) => item.quantity < item.reorder_level)
+      .length || 0;
+
+  const { count: customerCount } = await supabase
+    .from("customers")
+    .select("*", { count: "exact" });
+
+  numberOfCustomers.value = customerCount || 0;
+
+  fetchCreditSales();
+});
 
 const stats = ref([
   {
-    name: "Total Outstanding",
-    value: "₦2,432,340",
-    change: "+12.3%",
+    name: "Total Debt Owed",
+    get value() {
+      return formatCurrency(totalOutstanding.value);
+    },
     increasing: true,
     icon: "i-heroicons-currency-dollar",
   },
   {
     name: "Overdue Payments",
-    value: "₦543,550",
-    change: "+4.5%",
-    increasing: true,
+    value: overdueCount,
+    increasing: false,
     icon: "i-heroicons-exclamation-circle",
   },
   {
-    name: "Due This Week",
-    value: "₦125,000",
-    change: "-2.3%",
+    name: "Low Stock Count",
+    value: lowStockCount,
     increasing: false,
     icon: "i-heroicons-calendar",
   },
   {
-    name: "Active Debtors",
-    value: "245",
-    change: "+5.2%",
+    name: "Customers",
+    value: numberOfCustomers,
     increasing: true,
     icon: "i-heroicons-users",
-  },
-]);
-
-const recentTransactions = ref([
-  {
-    id: 1,
-    debtor: "ABC Trading",
-    amount: "₦125,000",
-    type: "Credit Sale",
-    status: "Pending",
-    date: "2024-02-01",
-  },
-  {
-    id: 2,
-    debtor: "XYZ Stores",
-    amount: "₦75,000",
-    type: "Payment",
-    status: "Completed",
-    date: "2024-02-01",
-  },
-  {
-    id: 3,
-    debtor: "Global Merchants",
-    amount: "₦250,000",
-    type: "Credit Sale",
-    status: "Overdue",
-    date: "2024-01-30",
-  },
-]);
-
-const chartData = {
-  labels: ["January", "February", "March", "April", "May", "June"],
-  datasets: [
-    {
-      label: "Collections",
-      data: [4000, 3000, 2000, 2780, 1890, 2390],
-      borderColor: "#4F46E5",
-      tension: 0.4,
-    },
-    {
-      label: "Outstanding Debt",
-      data: [2400, 1398, 9800, 3908, 4800, 3800],
-      borderColor: "#EF4444",
-      tension: 0.4,
-    },
-  ],
-};
-
-const upcomingPayments = ref([
-  {
-    debtor: "ABC Trading",
-    amount: "₦50,000",
-    dueDate: "2024-02-05",
-  },
-  {
-    debtor: "XYZ Stores",
-    amount: "₦75,000",
-    dueDate: "2024-02-07",
-  },
-  {
-    debtor: "Global Merchants",
-    amount: "₦100,000",
-    dueDate: "2024-02-10",
   },
 ]);
 
@@ -100,11 +79,13 @@ const selectedPeriod = ref("Last 6 months");
 const getStatusColor = (status) => {
   switch (status.toLowerCase()) {
     case "completed":
-      return "success";
+      return "emerald";
     case "pending":
-      return "warning";
+      return "orange";
     case "overdue":
-      return "danger";
+      return "red";
+    case "partial":
+      return "teal";
     default:
       return "gray";
   }
@@ -119,7 +100,11 @@ useHead({
   <div class="p-4 lg:p-8 lg:ml-64 space-y-6">
     <!-- Page Header -->
     <div class="flex justify-end items-center">
-      <UButton icon="i-heroicons-plus" label="New Transaction" />
+      <UButton
+        to="/dashboard/transactions?new=true"
+        icon="i-heroicons-plus"
+        label="New Transaction"
+      />
     </div>
 
     <!-- Stats Cards -->
@@ -128,7 +113,9 @@ useHead({
         <div class="flex items-start justify-between">
           <div>
             <p class="text-sm text-gray-500">{{ stat.name }}</p>
-            <p class="text-2xl font-semibold mt-1">{{ stat.value }}</p>
+            <p class="text-2xl font-semibold mt-1">
+              {{ stat.value }}
+            </p>
           </div>
           <UIcon
             :name="stat.icon"
@@ -136,7 +123,7 @@ useHead({
             :class="stat.increasing ? 'text-green-600' : 'text-red-600'"
           />
         </div>
-        <div class="flex items-center mt-2">
+        <!-- <div class="flex items-center mt-2">
           <UIcon
             :name="
               stat.increasing
@@ -152,18 +139,19 @@ useHead({
           >
             {{ stat.change }}
           </span>
-        </div>
+        </div> -->
       </UCard>
     </div>
 
     <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 gap-6">
       <!-- Recent Transactions -->
       <UCard class="lg:col-span-2">
         <template #header>
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold">Recent Transactions</h2>
             <UButton
+              to="/dashboard/transactions"
               color="gray"
               variant="ghost"
               icon="i-heroicons-arrow-right"
@@ -173,17 +161,20 @@ useHead({
         </template>
 
         <UTable
-          :rows="recentTransactions"
+          :rows="creditSales"
           :columns="[
-            { key: 'debtor', label: 'Debtor' },
-            { key: 'amount', label: 'Amount' },
-            { key: 'type', label: 'Type' },
+            { key: 'customer_name', label: 'Customer' },
+            { key: 'total_amount', label: 'Amount' },
             { key: 'status', label: 'Status' },
-            { key: 'date', label: 'Date' },
+            { key: 'due_date', label: 'Date' },
           ]"
         >
+          <template #total_amount-data="{ row }">
+            {{ formatCurrency(row.total_amount) }}
+          </template>
           <template #status-data="{ row }">
             <UBadge
+              variant="subtle"
               :color="getStatusColor(row.status)"
               size="sm"
               :label="row.status"
@@ -192,51 +183,13 @@ useHead({
         </UTable>
       </UCard>
 
-      <!-- Upcoming Payments -->
-      <UCard>
-        <template #header>
-          <h2 class="text-lg font-semibold">Upcoming Payments</h2>
-        </template>
-
-        <ul class="divide-y divide-gray-100">
-          <li
-            v-for="payment in upcomingPayments"
-            :key="payment.debtor"
-            class="py-3"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="font-medium">{{ payment.debtor }}</p>
-                <p class="text-sm text-gray-500">Due: {{ payment.dueDate }}</p>
-              </div>
-              <p class="font-semibold">{{ payment.amount }}</p>
-            </div>
-          </li>
-        </ul>
-      </UCard>
-
-      <!-- Chart -->
-      <UCard class="lg:col-span-3">
+      <UCard class="lg:col-span-2">
         <template #header>
           <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold">Collections vs Debt Trend</h2>
-            <USelect
-              v-model="selectedPeriod"
-              :options="['Last 6 months', 'Last 12 months', 'This year']"
-              placeholder="Select period"
-            />
+            <h2 class="text-lg font-semibold">Debt vs Collections by Month</h2>
           </div>
         </template>
-
-        <!-- For the chart, you'll need to install and import a Vue chart library -->
-        <div class="h-80">
-          <!-- Add your chart component here -->
-          <UAlert icon="i-heroicons-information-circle">
-            To add the chart, install a Vue charting library like Chart.js with
-            vue-chartjs:
-            <UCode>npm install vue-chartjs chart.js</UCode>
-          </UAlert>
-        </div>
+        <DashboardDebtCollectionChart />
       </UCard>
     </div>
   </div>

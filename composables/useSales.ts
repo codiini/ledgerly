@@ -20,7 +20,7 @@ export const useSales = () => {
     fetch: false,
   });
 
-  const fetchCreditSales = async (state = false) => {
+  const fetchCreditSales = async ( limit: number = 5, state = false) => {
     loadingStates.fetch = state;
     let { data, error } = await supabase
       .from(`${TABLE_NAME}`)
@@ -29,12 +29,12 @@ export const useSales = () => {
         *,
         customers:customers!credit_sales_customer_id_fkey(name)
       `
-      )
+      ).limit(limit)
       .eq("merchant_id", user.value?.id)
       .order("created_at", { ascending: false });
     loadingStates.fetch = false;
-    //set a deleting state on each inventory item
 
+    //set a deleting state and customer_name on each inventory item
     creditSales.value =
       data.map(({ customers, ...sale }) => ({
         ...sale,
