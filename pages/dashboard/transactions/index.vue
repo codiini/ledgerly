@@ -144,12 +144,7 @@
                   />
                 </div>
                 <div class="col-span-2">
-                  <UInput
-                    v-model="item.quantity"
-                    type="number"
-                    min="1"
-                    @update:model-value="updateItemTotal"
-                  />
+                  <UInput v-model="item.quantity" type="number" min="1" />
                 </div>
                 <div class="col-span-3">
                   <UInput
@@ -262,21 +257,21 @@
         <div v-if="selectedSale" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <p class="font-medium text-xs text-gray-450">Customer</p>
+              <p class="font-medium text-xs text-gray-500">Customer</p>
               <p class="text-sm">{{ selectedSale.customer_name }}</p>
             </div>
             <div>
-              <p class="font-medium text-xs text-gray-450">Date</p>
+              <p class="font-medium text-xs text-gray-500">Date</p>
               <p class="text-sm">
                 {{ new Date(selectedSale.created_at).toLocaleDateString() }}
               </p>
             </div>
             <div>
-              <p class="font-medium text-xs text-gray-450">Status</p>
+              <p class="font-medium text-xs text-gray-500">Status</p>
               <p class="text-sm">{{ selectedSale.status }}</p>
             </div>
             <div>
-              <p class="font-medium text-xs text-gray-450">Due Date</p>
+              <p class="font-medium text-xs text-gray-500">Due Date</p>
               <p class="text-sm">
                 {{ new Date(selectedSale.due_date).toLocaleDateString() }}
               </p>
@@ -284,7 +279,7 @@
           </div>
 
           <div class="pt-4">
-            <h4 class="font-medium mb-2 text-gray-450">Items</h4>
+            <h4 class="font-medium mb-2 text-gray-500">Items</h4>
             <UTable
               :rows="saleItems"
               :columns="[
@@ -310,7 +305,7 @@
           </div>
 
           <div>
-            <h4 class="font-medium mb-2 text-gray-450">Payments</h4>
+            <h4 class="font-medium mb-2 text-gray-500">Payments</h4>
             <UTable
               :rows="payments"
               :columns="[
@@ -351,6 +346,11 @@
 </template>
 
 <script setup lang="ts">
+interface SaleItem {
+  inventory_id: string;
+  quantity: number;
+  unit_price: number;
+}
 const supabase = useSupabaseClient();
 
 const { creditSales, fetchCreditSales, createSaleRecord } = useSales();
@@ -368,7 +368,7 @@ const selectedSale = ref(null);
 const saleForm = ref({
   customer_id: "",
   due_date: "",
-  items: [],
+  items: [] as SaleItem[],
 });
 
 const paymentForm = ref({
@@ -378,7 +378,7 @@ const paymentForm = ref({
 
 const addItem = () => {
   saleForm.value.items.push({
-    inventory_id: null,
+    inventory_id: "",
     quantity: 1,
     unit_price: 0,
   });
@@ -438,11 +438,11 @@ const saveSale = async () => {
 
   isAddingSale.value = false;
   saleForm.value = {
-    customer_id: null,
+    customer_id: "",
     due_date: "",
     items: [],
   };
-  await fetchCreditSales();
+  await fetchCreditSales(20);
 };
 
 const recordPayment = (sale) => {
@@ -518,4 +518,16 @@ const viewSaleDetails = async (sale) => {
 onMounted(async () => {
   await Promise.all([fetchCreditSales(), fetchCustomers(), fetchInventory()]);
 });
+
+const route = useRoute();
+
+watch(
+  () => route.query,
+  () => {
+    if (route.query.new) isAddingSale.value = true;
+  },
+  {
+    immediate: true,
+  }
+);
 </script>
