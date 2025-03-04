@@ -17,5 +17,10 @@ export default defineNuxtConfig({
       login: "/auth/login",
       callback: "/auth/confirm",
     },
+  },
+  runtimeConfig:{
+    twilioAccountSid: process.env.TWILIO_ACCOUNT_SID,
+    twilioAuthToken: process.env.TWILIO_AUTH_TOKEN,
+    twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER,
   }
 })
