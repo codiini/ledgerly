@@ -3,7 +3,7 @@
     <UCard>
       <template #header>
         <div class="flex justify-between items-center">
-          <h1 class="text-xl font-bold">Credit Sales</h1>
+          <h2 class="text-xl">Credit Sales</h2>
           <UButton
             icon="i-heroicons-plus"
             color="primary"
@@ -352,6 +352,8 @@ interface SaleItem {
   unit_price: number;
 }
 const supabase = useSupabaseClient();
+
+const { formatCurrency } = useFormatCurrency();
 
 const { creditSales, fetchCreditSales, createSaleRecord } = useSales();
 const { customerList, fetchCustomers } = useCustomers();

@@ -3,7 +3,7 @@
     <UCard>
       <template #header>
         <div class="flex justify-between items-center">
-          <h1 class="text-xl font-bold">Customers</h1>
+          <h2 class="text-xl">Customers</h2>
           <UButton
             icon="i-heroicons-plus"
             color="primary"

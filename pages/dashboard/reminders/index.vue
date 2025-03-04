@@ -1,7 +1,7 @@
 <template>
   <div class="p-4 lg:p-8 lg:ml-64 space-y-6">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold">Payment Reminders</h2>
+      <h2 class="text-xl">Payment Reminders</h2>
       <div class="flex gap-2">
         <UButton
           color="primary"

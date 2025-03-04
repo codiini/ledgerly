@@ -3,7 +3,7 @@
     <UCard>
       <template #header>
         <div class="flex justify-between items-center">
-          <h1 class="text-xl font-bold">Inventory Management</h1>
+          <h2 class="text-xl">Inventory Management</h2>
           <UButton
             icon="i-heroicons-plus"
             color="primary"
@@ -112,6 +112,8 @@
 
 <script setup lang="ts">
 import type { Inventory } from "~/types/index";
+
+const { formatCurrency } = useFormatCurrency();
 
 const columns = [
   // { key: "itemId", label: "Item Number" },
