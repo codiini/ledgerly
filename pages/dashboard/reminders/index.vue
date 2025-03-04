@@ -224,7 +224,7 @@
 const supabase = useSupabaseClient();
 const toast = useToast();
 
-const { formatCurrency } = useFormatCurrency();
+const { formatCurrency } = useCurrency();
 
 const overduePayments = ref([]);
 const reminderHistory = ref([]);
@@ -290,13 +290,14 @@ const fetchReminderHistory = async () => {
         message,
         status,
         credit_sales (
+          merchant_id,
           customers (
             name
           )
         )
       `
     )
-    .eq("merchant_id", user.value.id)
+    .eq("credit_sales.merchant_id", user.value.id)
     .order("sent_at", { ascending: false })
     .limit(20);
 

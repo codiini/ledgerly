@@ -124,7 +124,9 @@
               <template v-if="!Boolean(customerList.length)" #help>
                 <span class="text-gray-500 dark:text-gray-400 text-xs"
                   >Add a new customer
-                  <NuxtLink class="text-green-500" to="/dashboard/customers?new=true"
+                  <NuxtLink
+                    class="text-green-500"
+                    to="/dashboard/customers?new=true"
                     >here</NuxtLink
                   >
                 </span>
@@ -361,7 +363,7 @@ interface SaleItem {
 }
 const supabase = useSupabaseClient();
 
-const { formatCurrency } = useFormatCurrency();
+const { formatCurrency } = useCurrency();
 
 const { creditSales, fetchCreditSales, createSaleRecord } = useSales();
 const { customerList, fetchCustomers } = useCustomers();

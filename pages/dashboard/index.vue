@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { useFormatCurrency } from "#imports";
+import { useCurrency } from "#imports";
 const supabase = useSupabaseClient();
 
 const totalOutstanding = ref(0);
@@ -11,7 +11,7 @@ const numberOfCustomers = ref(0);
 const user = useSupabaseUser();
 
 const { creditSales, fetchCreditSales } = useSales();
-const { formatCurrency } = useFormatCurrency();
+const { formatCurrency } = useCurrency();
 
 onMounted(async () => {
   const { data: outstandingData } = await supabase

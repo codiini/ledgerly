@@ -113,7 +113,7 @@
 <script setup lang="ts">
 import type { Inventory } from "~/types/index";
 
-const { formatCurrency } = useFormatCurrency();
+const { formatCurrency } = useCurrency();
 
 const columns = [
   // { key: "itemId", label: "Item Number" },

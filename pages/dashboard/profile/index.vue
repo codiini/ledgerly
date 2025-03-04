@@ -110,39 +110,16 @@
 </template>
 
 <script setup lang="ts">
+import { currencies } from "#imports";
 const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 const toast = useToast();
 
-const formatCurrency = (amount: number | bigint, currency = "USD") => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency,
-    currencyDisplay: "narrowSymbol",
-    currencySign: "accounting",
-  }).format(amount);
-};
+const { formatCurrency } = useCurrency();
 
-const currencies = [
-  { name: "US Dollar", code: "USD", symbol: "$" },
-  { name: "Euro", code: "EUR", symbol: "€" },
-  { name: "British Pound", code: "GBP", symbol: "£" },
-  { name: "Japanese Yen", code: "JPY", symbol: "¥" },
-  { name: "Canadian Dollar", code: "CAD", symbol: "CA$" },
-  { name: "Australian Dollar", code: "AUD", symbol: "A$" },
-  { name: "Swiss Franc", code: "CHF", symbol: "CHF" },
-  { name: "Chinese Yuan", code: "CNY", symbol: "¥" },
-  { name: "Indian Rupee", code: "INR", symbol: "₹" },
-  { name: "Brazilian Real", code: "BRL", symbol: "R$" },
-  { name: "South African Rand", code: "ZAR", symbol: "R" },
-  { name: "Nigerian Naira", code: "NGN", symbol: "₦" },
-  { name: "Kenyan Shilling", code: "KES", symbol: "KSh" },
-  { name: "Ghanaian Cedi", code: "GHS", symbol: "GH₵" },
-];
-
-const computeFormatCurrency = computed(() =>
-  formatCurrency(123456, form.value.currency)
-);
+const computeFormatCurrency = computed(() => {
+  return formatCurrency(123456, form.value.currency);
+});
 
 const { userInitials } = useUser();
 
