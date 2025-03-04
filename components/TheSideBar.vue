@@ -56,6 +56,11 @@ const links = [
     to: "/dashboard/customers",
   },
   {
+    label: "Reminders",
+    icon: "i-heroicons-bell-alert-solid",
+    to: "/dashboard/reminders",
+  },
+  {
     label: "Inventory",
     icon: "i-heroicons-shopping-bag-solid",
     to: "/dashboard/inventory",
