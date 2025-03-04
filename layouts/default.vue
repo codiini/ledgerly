@@ -3,7 +3,7 @@
     <div class="flex w-full relative mb-20">
       <TheSideBar :isOpen="isSidebarOpen" @close="closeSidebar"></TheSideBar>
       <div
-        class="lg:ml-64 p-4 lg:px-8 w-full lg:w-[calc(100%-16rem)] fixed bg-gray-50 dark:bg-gray-950 z-20 h-20 flex items-center"
+        class="lg:ml-64 p-4 lg:px-8 w-full lg:w-[calc(100%-16rem)] lg:fixed bg-gray-50 dark:bg-gray-950 z-20 h-20 flex items-center"
       >
         <UButton
           @click="toggleSidebar"
