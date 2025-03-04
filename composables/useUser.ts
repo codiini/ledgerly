@@ -1,6 +1,5 @@
-const user = useSupabaseUser()
-
 export default function useUser() { 
+    const user = useSupabaseUser();
 
     const userInitials = computed(() => {
         if (!user.value?.email) return "?";
