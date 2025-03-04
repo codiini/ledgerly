@@ -24,20 +24,6 @@ export const useCurrency = () => {
   const currencySymbol = ref('$')
   const currencyCode = ref('USD')
 
-  const loadCurrencyFromStorage = () => {
-    const storedCurrency = localStorage.getItem('user_currency');
-    const storedSymbol = localStorage.getItem('user_currency_symbol');
-
-    if (storedCurrency) currencyCode.value = storedCurrency;
-    if (storedSymbol) currencySymbol.value = storedSymbol;
-  };
-
-  const saveCurrencyToStorage = (code: string, symbol: string) => {
-    localStorage.setItem('user_currency', code);
-    localStorage.setItem('user_currency_symbol', symbol);
-  };
-  
-
   const fetchCurrencySettings = async () => {
     const { data } = await supabase
       .from('store_settings')

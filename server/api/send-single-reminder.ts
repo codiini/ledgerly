@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
   
   // Create Supabase client for server-side
   const supabase = serverSupabaseClient(event)
+  const userId = (await (await supabase).auth.getUser()).data.user?.id
 
   // Initialize Twilio client
   const client = twilio(
@@ -43,15 +44,17 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const { data: currency } = await (await supabase)
+      .from('store_settings')
+      .select('currency_symbol')
+      .eq('user_id', userId as string)
+      .single()
+    
   const amountDue = sale.total_amount - sale.paid_amount
-  const formattedAmount = `${currencySymbol}${amountDue.toFixed(2)}`
+  const formattedAmount = `${currency.currency_symbol}${amountDue.toFixed(2)}`
   const formattedDate = new Date(sale.due_date).toLocaleDateString()
   
   const message = `Dear ${sale.customers.name}, your payment of ${formattedAmount} was due on ${formattedDate}. Please make the payment as soon as possible.`
-
-  // const message = `Dear ${sale.customers.name}, your payment of $${
-  //   (sale.total_amount - sale.paid_amount).toFixed(2)
-  // } was due on ${new Date(sale.due_date).toLocaleDateString()}. Please make the payment as soon as possible.`
 
   try {
     await client.messages.create({
