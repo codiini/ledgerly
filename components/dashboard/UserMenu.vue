@@ -3,7 +3,14 @@
     <div class="flex justify-between items-center">
       <UDropdown :items="items" :popper="{ placement: 'bottom-start' }">
         <UButton color="white" variant="outline">
-          <UAvatar :alt="userInitials" size="sm"></UAvatar>
+          <UAvatar
+            :ui="{
+              background: 'bg-gray-500',
+              placeholder: 'text-white',
+            }"
+            :alt="userInitials"
+            size="sm"
+          ></UAvatar>
         </UButton>
       </UDropdown>
     </div>

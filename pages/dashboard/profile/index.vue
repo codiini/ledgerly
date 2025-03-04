@@ -97,8 +97,10 @@
           </div>
         </div>
 
-        <div class="border-t pt-4 mt-4">
-          <UButton color="red" variant="ghost" @click="supabase.auth.signOut()">
+        <UDivider />
+
+        <div class="mt-4">
+          <UButton color="red" variant="ghost" @click="logout()">
             Sign Out
           </UButton>
         </div>
@@ -210,6 +212,22 @@ const saveSettings = async () => {
   } finally {
     isSaving.value = false;
   }
+};
+
+const logout = async () => {
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    return toast.add({
+      title: "Error while logging out",
+      icon: "i-heroicons-check-badge-solid",
+      color: "red",
+    });
+  }
+  toast.add({
+    title: "Log out Successful!",
+    icon: "i-heroicons-check-badge-solid",
+  });
+  await navigateTo("/auth/login");
 };
 
 onMounted(fetchSettings);

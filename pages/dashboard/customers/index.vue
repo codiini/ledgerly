@@ -213,5 +213,16 @@ const saveCustomer = async () => {
   };
 };
 
+const route = useRoute();
+watch(
+  () => route.query,
+  () => {
+    if (route.query.new) isNewModalOpen.value = true;
+  },
+  {
+    immediate: true,
+  }
+);
+
 onMounted(fetchCustomers);
 </script>

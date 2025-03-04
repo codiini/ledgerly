@@ -45,8 +45,8 @@ onMounted(async () => {
 
   const { count: customerCount } = await supabase
     .from("customers")
-    .eq("merchant_id", user.value?.id)
-    .select("*", { count: "exact" });
+    .select("*", { count: "exact" })
+    .eq("merchant_id", user.value?.id);
 
   numberOfCustomers.value = customerCount || 0;
 

@@ -6,7 +6,7 @@ export default function useUser() {
         return user.value.email.substring(0, 2).toUpperCase();
       });
 
-      const userFirstName = computed(() => user.value?.user_metadata.firstName);
+      const userFirstName = computed(() => user.value?.user_metadata.firstName ?? user.value?.user_metadata.firstname);
 
 
     return {
