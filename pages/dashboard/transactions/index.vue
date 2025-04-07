@@ -378,7 +378,7 @@ interface SaleItem {
   quantity: number;
   unit_price: number;
 }
-
+const route = useRoute();
 const supabase = useSupabaseClient();
 
 const { formatCurrency } = useCurrency();

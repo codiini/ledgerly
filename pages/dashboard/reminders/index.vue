@@ -232,6 +232,7 @@
  */
 
 const supabase = useSupabaseClient();
+const user = useSupabaseUser();
 const toast = useToast();
 const { formatCurrency } = useCurrency();
 
