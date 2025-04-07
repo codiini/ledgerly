@@ -2,10 +2,11 @@
 
 This repository contains code for my school coursework (Java and Web Development)
 
-This project helps Small and Medium-sized businesses manage and keep track of debt or credit sales 
+This project helps Small and Medium-sized businesses manage and keep track of debt or credit sales. All of the components, pages, and composables are documented using JSDOC. 
 
 ## Installation Instructions
 First, clone this repository to your local machine:
+
 ```sh
 #Over HTTPS
 git clone https://github.com/codiini/ledgerly.git
@@ -35,7 +36,7 @@ If you don't want to have to go through creating an account, you can use the fol
 - Password: admin@test.com
 ```
 
-## TODOs
+<!-- ## TODOs
 
 - [x] Twilio Integration for SMS support
-- [ ] Convert to PWA and Local first architecture
+- [ ] Convert to PWA and Local first architecture -->
