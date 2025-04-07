@@ -1,11 +1,22 @@
 import type { Customer } from "~/types";
 const TABLE_NAME = 'customers'
 
+/**
+ * Vue composable for managing customer data operations
+ * @returns {Object} Customer management methods and reactive references
+ * @property {Ref<Customer[]>} customerList - Reactive array of customers
+ * @property {Function} fetchCustomers - Fetches all customers for the current merchant
+ * @property {Function} updateCustomer - Updates an existing customer
+ * @property {Function} createCustomer - Creates a new customer
+ * @property {Function} deleteCustomer - Deletes a customer
+ */
+
 export const useCustomers = () => {
   const supabase = useSupabaseClient();
   const user = useSupabaseUser();
   const toast = useToast();
 
+  /** Reactive reference to store the list of customers */
   const customerList = ref<Customer[]>([]);
 
   const loadingStates = reactive({
@@ -14,6 +25,11 @@ export const useCustomers = () => {
     fetch: false,
   });
 
+    /**
+   * Fetches all customers for the current merchant
+   * @param {boolean} state - Loading state flag
+   * @returns {Promise<void>}
+   */
   const fetchCustomers = async (state = false) => {
     loadingStates.fetch = state;
     let { data, error } = await supabase
@@ -41,6 +57,13 @@ export const useCustomers = () => {
     }
   };
 
+    /**
+   * Updates an existing customer's information
+   * @param {Object} params - Update parameters
+   * @param {Partial<Customer>} params.data - Customer data to update
+   * @param {string} params.id - ID of the customer to update
+   * @returns {Promise<void>}
+   */
   const updateCustomer = async ({
     data,
     id,
@@ -72,6 +95,12 @@ export const useCustomers = () => {
     });
   };
 
+    /**
+   * Creates a new customer
+   * @param {Object} params - Create parameters
+   * @param {Partial<Customer>} params.data - Customer data to create
+   * @returns {Promise<Customer|null>} Created customer data or null if creation fails
+   */
   const createCustomer = async ({ data }: { data: Partial<Customer> }) => {
     loadingStates.save = true;
     const { data: response, error } = await supabase
@@ -97,6 +126,11 @@ export const useCustomers = () => {
     return data[0];
   };
 
+    /**
+   * Deletes a customer by ID
+   * @param {string} id - ID of the customer to delete
+   * @returns {Promise<void>}
+   */
   const deleteCustomer = async (id: string) => {
     loadingStates.delete = true;
     const { error } = await supabase

@@ -38,6 +38,12 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component ForgotPasswordPage
+ * @description Password reset request page
+ * Sends password reset email via Supabase auth
+ */
+
 import { z } from "zod";
 
 const supabase = useSupabaseClient();
@@ -57,10 +63,20 @@ const formState = reactive({
 const isLoading = ref(false);
 const form = ref();
 
+/**
+ * Form validation schema
+ * @constant {z.ZodObject}
+ */
 const schema = z.object({
   email: z.string().email("Invalid email"),
 });
 
+/**
+ * Handles password reset request
+ * @async
+ * @function handleResetPassword
+ * @throws {Error} If reset request fails
+ */
 const handleResetPassword = async () => {
   form.value.validate();
   isLoading.value = true;

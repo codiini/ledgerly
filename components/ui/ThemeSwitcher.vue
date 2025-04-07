@@ -1,4 +1,14 @@
 <script setup lang="ts">
+/**
+ * @component ThemeSwitcher
+ * @description Theme toggle component with popover interface
+ * Supports light and dark mode switching with persistent state
+ */
+
+/**
+ * Theme configuration options
+ * @type {Array<{name: string, icon: string, label: string}>}
+ */
 const colorMode = useColorMode();
 
 const themes = [
@@ -14,6 +24,11 @@ const themes = [
   },
 ];
 
+/**
+ * Updates color mode preference
+ * @function
+ * @param {string} theme - Theme name to activate
+ */
 const selectTheme = (theme: string) => {
   colorMode.preference = theme;
 };

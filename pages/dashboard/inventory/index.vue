@@ -111,12 +111,22 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component InventoryManagementPage
+ * @description Dashboard page for managing inventory items
+ * Provides CRUD operations for inventory management with a table view
+ * and modal form for adding/editing items
+ */
+
 import type { Inventory } from "~/types/index";
 
 const { formatCurrency } = useCurrency();
 
+/**
+ * Table column definitions
+ * @type {Array<{key: string, label: string}>}
+ */
 const columns = [
-  // { key: "itemId", label: "Item Number" },
   { key: "name", label: "Name" },
   { key: "cost", label: "Cost" },
   { key: "quantity", label: "Quantity" },
@@ -125,9 +135,23 @@ const columns = [
   { key: "actions", label: "Actions" },
 ];
 
-const isModalOpen = ref(false);
+/**
+ * Modal visibility state
+ * @type {Ref<boolean>}
+ */
+const isModalOpen: Ref<boolean> = ref(false);
+
+/**
+ * Edit mode state for the modal
+ * @type {Ref<boolean>}
+ */
 const isEditing = ref(false);
-const currentItem = ref<Inventory>({
+
+/**
+ * Currently selected/edited inventory item
+ * @type {Ref<Inventory>}
+ */
+const currentItem: Ref<Inventory> = ref<Inventory>({
   id: "",
   name: "",
   description: "",
@@ -146,6 +170,11 @@ const {
   deleteInventoryItem,
 } = useInventory();
 
+/**
+ * Opens modal for creating new inventory item
+ * Resets form state and sets editing mode to false
+ * @function
+ */
 const openNewItemModal = () => {
   isEditing.value = false;
   currentItem.value = {
@@ -160,12 +189,24 @@ const openNewItemModal = () => {
   isModalOpen.value = true;
 };
 
+/**
+ * Opens modal for editing existing inventory item
+ * @function
+ * @param {Inventory} item - Item to edit
+ */
 const openEditModal = (item: Inventory) => {
   isEditing.value = true;
   currentItem.value = { ...item };
   isModalOpen.value = true;
 };
 
+/**
+ * Handles inventory item deletion
+ * Sets loading state during deletion process
+ * @async
+ * @function
+ * @param {string} id - ID of item to delete
+ */
 const handleDelete = async (id: string) => {
   //set the deleting state of the inventory item with the id to true
   inventoryList.value = inventoryList.value.map((inventory: Inventory) =>
@@ -176,6 +217,13 @@ const handleDelete = async (id: string) => {
   fetchInventory();
 };
 
+/**
+ * Saves current inventory item (create or update)
+ * Handles both creation and update operations
+ * Resets form state after save
+ * @async
+ * @function
+ */
 const saveInventoryItem = async () => {
   if (isEditing.value) {
     updateInventoryItem({

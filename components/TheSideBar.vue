@@ -41,6 +41,7 @@
 </template>
 
 <script lang="ts" setup>
+import { defineEmits, defineProps } from "vue";
 import ThemeSwticher from "./ui/ThemeSwitcher.vue";
 
 defineProps<{

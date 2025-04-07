@@ -20,23 +20,20 @@
 <script setup lang="ts">
 const toast = useToast();
 const client = useSupabaseClient();
+const { userInitials } = useUser();
+/**
+ * @component UserMenu
+ * @description User account dropdown menu component
+ * Features:
+ * - User avatar display
+ * - Quick access to profile and logout
+ * - Integration with auth system
+ */
 
-const logout = async () => {
-  const { error } = await client.auth.signOut();
-  if (error) {
-    return toast.add({
-      title: "Error while logging out",
-      icon: "i-heroicons-check-badge-solid",
-      color: "red",
-    });
-  }
-  toast.add({
-    title: "Log out Successful!",
-    icon: "i-heroicons-check-badge-solid",
-  });
-  await navigateTo("/auth/login");
-};
-
+/**
+ * Dropdown menu configuration
+ * @type {Array<Array<{label: string, icon: string, to?: string, click?: Function}>>}
+ */
 const items = [
   [
     {
@@ -52,5 +49,25 @@ const items = [
   ],
 ];
 
-const { userInitials } = useUser();
+/**
+ * Handles user logout process
+ * Includes success/error notifications
+ * @async
+ * @function
+ */
+const logout = async () => {
+  const { error } = await client.auth.signOut();
+  if (error) {
+    return toast.add({
+      title: "Error while logging out",
+      icon: "i-heroicons-check-badge-solid",
+      color: "red",
+    });
+  }
+  toast.add({
+    title: "Log out Successful!",
+    icon: "i-heroicons-check-badge-solid",
+  });
+  await navigateTo("/auth/login");
+};
 </script>

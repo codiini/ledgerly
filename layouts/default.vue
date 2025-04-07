@@ -27,22 +27,48 @@
 </template>
 
 <script setup>
+/**
+ * @component DefaultLayout
+ * @description Main layout component with responsive sidebar and header
+ * Manages sidebar state and provides basic layout structure for the application
+ */
+
 import UserMenu from "@/components/dashboard/UserMenu.vue";
 
+/**
+ * Reactive reference for sidebar visibility state
+ * @type {Ref<boolean>}
+ */
 const isSidebarOpen = ref(false);
 
+/**
+ * Destructured user's first name from useUser composable
+ * @type {ComputedRef<string>}
+ */
 const { userFirstName } = useUser();
 
+/**
+ * Toggles the sidebar open/closed state
+ * @function
+ */
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
 };
 
+/**
+ * Closes the sidebar on mobile devices (width < 1024px)
+ * @function
+ */
 const closeSidebar = () => {
   if (window.innerWidth < 1024) {
     isSidebarOpen.value = false;
   }
 };
 
+/**
+ * Lifecycle hook to initialize sidebar state and add resize listener
+ * Sets sidebar open by default on desktop (≥1024px) and closed on mobile
+ */
 onMounted(() => {
   isSidebarOpen.value = window.innerWidth >= 1024;
   window.addEventListener("resize", () => {
@@ -50,6 +76,9 @@ onMounted(() => {
   });
 });
 
+/**
+ * Lifecycle hook to clean up resize event listener
+ */
 onUnmounted(() => {
   window.removeEventListener("resize", () => {
     isSidebarOpen.value = window.innerWidth >= 1024;

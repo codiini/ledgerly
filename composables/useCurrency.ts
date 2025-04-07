@@ -1,5 +1,9 @@
 import { ref } from 'vue'
 
+/**
+ * Array of supported currencies with their details
+ * @type {Array<{name: string, code: string, symbol: string, locale: string}>}
+ */
 export const currencies = [
   { name: "US Dollar", code: "USD", symbol: "$", locale: "en-US" },
   { name: "Euro", code: "EUR", symbol: "€", locale: "de-DE" },
@@ -18,12 +22,27 @@ export const currencies = [
 ];
 
 
-export const useCurrency = () => {
+/**
+ * Vue composable for handling currency formatting and settings
+ * @returns {Object} Currency utility methods and reactive references
+ * @property {Ref<string>} currencySymbol - The current currency symbol
+ * @property {Ref<string>} currencyCode - The current currency code
+ * @property {Function} formatCurrency - Format number to currency string
+ * @property {Function} fetchCurrencySettings - Fetch user's currency preferences
+ */
+export const useCurrency = (): object => {
   const supabase = useSupabaseClient()
   const user = useSupabaseUser()
   const currencySymbol = ref('$')
   const currencyCode = ref('USD')
 
+
+  /**
+   * Fetches user's currency settings from Supabase
+   * Updates currencySymbol and currencyCode refs with fetched values
+   * @async
+   * @returns {Promise<void>}
+   */
   const fetchCurrencySettings = async () => {
     const { data } = await supabase
       .from('store_settings')
@@ -37,8 +56,16 @@ export const useCurrency = () => {
     }
   }
 
-
-   const formatCurrency = (amount:  number | bigint, currency: string) => {
+  /**
+   * Formats a number into a localized currency string
+   * @param {number | bigint} amount - The amount to format
+   * @param {string} currency - The currency code to use for formatting
+   * @returns {string} Formatted currency string
+   * @example
+   * formatCurrency(1000, 'USD') // Returns "$1,000.00"
+   * formatCurrency(1000, 'EUR') // Returns "€1,000.00"
+   */
+   const formatCurrency = (amount:  number | bigint, currency: string): string => {
     const profileSettingLocale = currencies.find((c) => c.code === currency)?.locale ?? 'en-US';
     const currencyLocale = currencies.find((c) => c.code === currencyCode.value)?.locale ?? 'en-US';
     return new Intl.NumberFormat(

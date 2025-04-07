@@ -61,6 +61,13 @@
 </template>
 
 <script lang="ts" setup>
+/**
+ * @component LoginPage
+ * @description Authentication page for user login
+ * Handles email/password authentication using Supabase
+ * Includes remember me functionality and password visibility toggle
+ */
+
 import { z } from "zod";
 
 const supabase = useSupabaseClient();
@@ -78,17 +85,34 @@ const isLoading = ref(false);
 const showPassword = ref(false);
 const form = ref();
 
+/**
+ * Reactive form state
+ * @type {Object}
+ * @property {string} email - User's email address
+ * @property {string} password - User's password
+ * @property {boolean} rememberMe - Remember me preference
+ */
 const formState = reactive({
   email: "",
   password: "",
   rememberMe: false,
 });
 
+/**
+ * Form validation schema using Zod
+ * @constant {z.ZodObject}
+ */
 const schema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string(),
 });
 
+/**
+ * Handles form submission and authentication
+ * @async
+ * @function handleLogin
+ * @throws {Error} If authentication fails
+ */
 const handleLogin = async () => {
   form.value.validate();
   isLoading.value = true;

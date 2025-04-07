@@ -1,8 +1,21 @@
 <script setup>
+/**
+ * @component DashboardPage
+ * @description Main dashboard view displaying business metrics and recent transactions
+ * Shows key performance indicators, recent credit sales, and debt collection trends
+ */
+
 import { ref } from "vue";
 import { useCurrency } from "#imports";
 const supabase = useSupabaseClient();
 
+/**
+ * Reactive references for dashboard metrics
+ * @type {Ref<number>} totalOutstanding - Total unpaid debt amount
+ * @type {Ref<number>} overdueCount - Number of overdue payments
+ * @type {Ref<number>} lowStockCount - Number of items below reorder level
+ * @type {Ref<number>} numberOfCustomers - Total customer count
+ */
 const totalOutstanding = ref(0);
 const overdueCount = ref(0);
 const lowStockCount = ref(0);
@@ -13,6 +26,14 @@ const user = useSupabaseUser();
 const { creditSales, fetchCreditSales } = useSales();
 const { formatCurrency } = useCurrency();
 
+/**
+ * Fetches and initializes dashboard data
+ * - Outstanding debt total
+ * - Overdue payment count
+ * - Low stock items count
+ * - Customer count
+ * - Recent transactions
+ */
 onMounted(async () => {
   const { data: outstandingData } = await supabase
     .from("credit_sales")
@@ -53,6 +74,15 @@ onMounted(async () => {
   fetchCreditSales();
 });
 
+/**
+ * Dashboard statistics configuration
+ * @type {Ref<Array<{
+ *   name: string,
+ *   value: string|number,
+ *   increasing: boolean,
+ *   icon: string
+ * }>>}
+ */
 const stats = ref([
   {
     name: "Total Debt Owed",
@@ -84,6 +114,11 @@ const stats = ref([
 
 const selectedPeriod = ref("Last 6 months");
 
+/**
+ * Determines badge color based on transaction status
+ * @param {string} status - Transaction status
+ * @returns {string} Color name for UBadge component
+ */
 const getStatusColor = (status) => {
   switch (status.toLowerCase()) {
     case "completed":

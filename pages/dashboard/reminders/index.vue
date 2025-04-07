@@ -221,11 +221,29 @@
 </template>
 
 <script setup>
+/**
+ * @component PaymentRemindersPage
+ * @description Manages payment reminders for overdue credit sales
+ * Features:
+ * - Display overdue payments with customer details
+ * - Send individual or bulk payment reminders
+ * - View reminder history by customer
+ * - Track reminder delivery status
+ */
+
 const supabase = useSupabaseClient();
 const toast = useToast();
-
 const { formatCurrency } = useCurrency();
 
+/**
+ * Reactive state for reminder management
+ * @type {Ref<Array>} overduePayments - List of overdue payments
+ * @type {Ref<Array>} reminderHistory - Global reminder history
+ * @type {Ref<Array>} customerReminderHistory - Selected customer's reminders
+ * @type {Ref<Object|null>} selectedCustomer - Currently selected customer
+ * @type {Ref<boolean>} isViewingHistory - Modal visibility state
+ * @type {Ref<boolean>} isSending - Global sending state
+ */
 const overduePayments = ref([]);
 const reminderHistory = ref([]);
 const customerReminderHistory = ref([]);
@@ -233,9 +251,13 @@ const selectedCustomer = ref(null);
 const isViewingHistory = ref(false);
 const isSending = ref(false);
 
-const user = useSupabaseUser();
-
-// Fetch overdue payments
+/**
+ * Fetches overdue payments from database
+ * Calculates days overdue and formats data for display
+ * @async
+ * @function fetchOverduePayments
+ * @returns {Promise<void>}
+ */
 const fetchOverduePayments = async () => {
   const { data } = await supabase
     .from("credit_sales")
@@ -278,7 +300,13 @@ const fetchOverduePayments = async () => {
   }
 };
 
-// Fetch reminder history
+/**
+ * Fetches global reminder history
+ * Limited to last 20 reminders
+ * @async
+ * @function fetchReminderHistory
+ * @returns {Promise<void>}
+ */
 const fetchReminderHistory = async () => {
   const { data } = await supabase
     .from("reminders")
@@ -313,7 +341,12 @@ const fetchReminderHistory = async () => {
   }
 };
 
-// Send reminders to all overdue customers
+/**
+ * Sends reminders to all overdue customers
+ * @async
+ * @function sendReminders
+ * @returns {Promise<void>}
+ */
 const sendReminders = async () => {
   if (overduePayments.value.length === 0) {
     toast.add({
@@ -346,7 +379,15 @@ const sendReminders = async () => {
   }
 };
 
-// Send reminder to a single customer
+/**
+ * Sends reminder to a specific customer
+ * @async
+ * @function sendSingleReminder
+ * @param {Object} payment - Payment record with customer details
+ * @param {string} payment.id - Credit sale ID
+ * @param {string} payment.customer_name - Customer name for toast message
+ * @returns {Promise<void>}
+ */
 const sendSingleReminder = async (payment) => {
   // Set loading state for this specific row
   const index = overduePayments.value.findIndex((p) => p.id === payment.id);
@@ -384,7 +425,17 @@ const sendSingleReminder = async (payment) => {
   }
 };
 
-// View reminder history for a specific customer
+/**
+ * Views reminder history for specific customer
+ * Opens modal with filtered reminder history
+ * @async
+ * @function viewReminderHistory
+ * @param {Object} payment - Payment record with customer details
+ * @param {string} payment.customer_id - Customer ID
+ * @param {string} payment.customer_name - Customer name
+ * @param {string} payment.id - Credit sale ID
+ * @returns {Promise<void>}
+ */
 const viewReminderHistory = async (payment) => {
   selectedCustomer.value = {
     id: payment.customer_id,
@@ -409,6 +460,7 @@ const viewReminderHistory = async (payment) => {
   isViewingHistory.value = true;
 };
 
+// Initialize data on component mount
 onMounted(async () => {
   await Promise.all([fetchOverduePayments(), fetchReminderHistory()]);
 });

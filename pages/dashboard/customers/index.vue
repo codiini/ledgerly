@@ -108,6 +108,15 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component CustomersPage
+ * @description Customer management dashboard
+ * Features:
+ * - Customer list with search and filtering
+ * - Add/Edit/Delete operations
+ * - Modal forms for customer data management
+ */
+
 import type { Customer } from "~/types/index";
 
 const {
@@ -145,13 +154,22 @@ const {
 // ]);
 const isEditModalOpen = ref(false);
 const isNewModalOpen = ref(false);
-const editingCustomer = ref<Customer>({
-  id: "",
-  name: "",
-  email: "",
-  phone: "",
-  address: "",
-});
+
+/**
+ * Table configuration for customer list
+ * @type {Array<{key: string, label: string}>}
+ */
+const columns = [
+  { key: "name", label: "Name" },
+  { key: "email", label: "Email" },
+  { key: "phone", label: "Phone" },
+  { key: "actions", label: "Actions" },
+];
+
+/**
+ * Form state for new customer
+ * @type {Ref<Object>}
+ */
 const newCustomer = ref({
   name: "",
   email: "",
@@ -159,12 +177,17 @@ const newCustomer = ref({
   address: "",
 });
 
-const columns = [
-  { key: "name", label: "Name" },
-  { key: "email", label: "Email" },
-  { key: "phone", label: "Phone" },
-  { key: "actions", label: "Actions" },
-];
+/**
+ * Form state for editing customer
+ * @type {Ref<Customer>}
+ */
+const editingCustomer = ref<Customer>({
+  id: "",
+  name: "",
+  email: "",
+  phone: "",
+  address: "",
+});
 
 const openNewCustomerModal = () => {
   newCustomer.value = {

@@ -63,6 +63,13 @@
 <script setup lang="ts">
 import { z } from "zod";
 
+/**
+ * @component RegisterPage
+ * @description User registration page
+ * Handles new user signup with email verification
+ * Collects first name, last name, email, and password
+ */
+
 const supabase = useSupabaseClient();
 const toast = useToast();
 
@@ -84,6 +91,15 @@ const formState = reactive({
 const formRef = ref(null);
 const showPassword = ref(false);
 
+/**
+ * Form validation schema
+ * @constant {z.ZodObject}
+ * Validates:
+ * - First name (min 3 chars)
+ * - Last name (min 3 chars)
+ * - Email (valid format)
+ * - Password (min 8 chars)
+ */
 const schema = z.object({
   firstName: z.string().min(3, "First name is required"),
   lastName: z.string().min(3, "Last name is required"),
@@ -99,6 +115,12 @@ const schema = z.object({
 
 const isLoading = ref(false);
 
+/**
+ * Handles user registration
+ * @async
+ * @function handleRegister
+ * @throws {Error} If registration fails
+ */
 const handleRegister = async () => {
   formRef.value.validate();
   isLoading.value = true;

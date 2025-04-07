@@ -356,11 +356,29 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component TransactionsPage
+ * @description Manages credit sales transactions including creation, payment recording, and viewing details
+ * Features:
+ * - Credit sale creation with multiple items
+ * - Payment recording and tracking
+ * - Detailed transaction view
+ * - Real-time inventory updates
+ */
+
+/**
+ * Structure for sale item in credit transaction
+ * @interface SaleItem
+ * @property {string} inventory_id - ID of inventory item
+ * @property {number} quantity - Quantity of items
+ * @property {number} unit_price - Price per unit
+ */
 interface SaleItem {
   inventory_id: string;
   quantity: number;
   unit_price: number;
 }
+
 const supabase = useSupabaseClient();
 
 const { formatCurrency } = useCurrency();
@@ -377,17 +395,33 @@ const isRecordingPayment = ref(false);
 const isViewingDetails = ref(false);
 const selectedSale = ref(null);
 
+/**
+ * Form state for new sale
+ * @type {Ref<Object>}
+ * @property {string} customer_id - Selected customer ID
+ * @property {string} due_date - Payment due date
+ * @property {SaleItem[]} items - Array of items in sale
+ */
 const saleForm = ref({
   customer_id: "",
   due_date: "",
   items: [] as SaleItem[],
 });
 
+/**
+ * Form state for payment recording
+ * @type {Ref<Object>}
+ */
 const paymentForm = ref({
   amount: 0,
   payment_method: "Cash",
 });
 
+/**
+ * Adds new item to sale form
+ * Initializes with default values
+ * @function
+ */
 const addItem = () => {
   saleForm.value.items.push({
     inventory_id: "",
@@ -396,6 +430,11 @@ const addItem = () => {
   });
 };
 
+/**
+ * Updates item price when inventory item is selected
+ * @function
+ * @param {number} index - Index of item in items array
+ */
 const updateItemPrice = (index: number) => {
   const item = saleForm.value.items[index];
   const inventoryItem = inventoryList.value.find(
@@ -406,13 +445,24 @@ const updateItemPrice = (index: number) => {
   }
 };
 
+/**
+ * Calculates total sale amount from items
+ * @type {ComputedRef<number>}
+ */
 const calculateTotal = computed(() => {
   return saleForm.value.items.reduce((total, item) => {
     return total + item.quantity * item.unit_price;
   }, 0);
 });
 
-//TODO: Refactor and add types
+/**
+ * Saves new credit sale transaction
+ * - Creates sale record
+ * - Adds sale items
+ * - Updates inventory quantities
+ * @async
+ * @function
+ */
 const saveSale = async () => {
   const sale = await createSaleRecord({
     data: {
@@ -457,6 +507,11 @@ const saveSale = async () => {
   await fetchCreditSales(20);
 };
 
+/**
+ * Initiates payment recording for a sale
+ * @function
+ * @param {Object} sale - Sale record to process payment for
+ */
 const recordPayment = (sale) => {
   selectedSale.value = sale;
   paymentForm.value = {
@@ -466,6 +521,11 @@ const recordPayment = (sale) => {
   isRecordingPayment.value = true;
 };
 
+/**
+ * Saves payment record and updates sale
+ * @async
+ * @function
+ */
 const savePayment = async () => {
   if (!selectedSale.value) return;
 
@@ -493,6 +553,14 @@ const savePayment = async () => {
   await fetchCreditSales();
 };
 
+/**
+ * Fetches and displays detailed sale information
+ * - Retrieves sale items with inventory details
+ * - Gets payment history
+ * @async
+ * @function
+ * @param {Object} sale - Sale record to view details for
+ */
 const viewSaleDetails = async (sale) => {
   selectedSale.value = sale;
 
@@ -527,12 +595,12 @@ const viewSaleDetails = async (sale) => {
   isViewingDetails.value = true;
 };
 
+// Initialize required data on component mount
 onMounted(async () => {
   await Promise.all([fetchCreditSales(), fetchCustomers(), fetchInventory()]);
 });
 
-const route = useRoute();
-
+// Watch for route changes to handle new sale triggers
 watch(
   () => route.query,
   () => {

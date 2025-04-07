@@ -110,6 +110,16 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component ProfilePage
+ * @description Profile and settings management page for merchants
+ * Includes:
+ * - Store information management
+ * - Currency settings configuration
+ * - User account management
+ * Features automatic form state tracking and optimistic updates
+ */
+
 import { currencies } from "#imports";
 const supabase = useSupabaseClient();
 const user = useSupabaseUser();
@@ -124,6 +134,16 @@ const computeFormatCurrency = computed(() => {
 const { userInitials } = useUser();
 
 const originalForm = ref({});
+/**
+ * Form state for profile settings
+ * @type {Ref<Object>}
+ * @property {string} store_name - Business name
+ * @property {string} email - Contact email
+ * @property {string} phone - Contact phone
+ * @property {string} address - Business address
+ * @property {string} currency - Selected currency code
+ * @property {string} currency_symbol - Currency symbol
+ */
 const form = ref({
   store_name: "",
   email: "",
@@ -134,10 +154,18 @@ const form = ref({
 });
 const isSaving = ref(false);
 
+/**
+ * Computed property to check for form changes
+ * @returns {boolean} True if form has unsaved changes
+ */
 const hasChanges = computed(() => {
   return JSON.stringify(originalForm.value) !== JSON.stringify(form.value);
 });
 
+/**
+ * Updates currency symbol when currency selection changes
+ * @function
+ */
 const updateCurrencySymbol = () => {
   const selectedCurrency = currencies.find(
     (c) => c.code === form.value.currency

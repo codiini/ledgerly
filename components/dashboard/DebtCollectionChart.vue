@@ -26,7 +26,14 @@ ChartJS.register(
 );
 
 const supabase = useSupabaseClient();
+
+/** @type {Ref<Object|null>} Reactive reference for chart data */
 const chartData = ref(null);
+
+/** 
+ * Chart configuration options
+ * @type {Ref<Object>}
+ */
 const chartOptions = ref({
   responsive: true,
   maintainAspectRatio: false,
@@ -49,7 +56,11 @@ const chartOptions = ref({
   },
 });
 
-// Function to get month name from date
+/**
+ * Converts a date to its corresponding month name
+ * @param {Date} date - Date to get month name from
+ * @returns {string} Three-letter month abbreviation
+ */
 const getMonthName = (date) => {
   const monthNames = [
     "Jan",
@@ -68,7 +79,11 @@ const getMonthName = (date) => {
   return monthNames[new Date(date).getMonth()];
 };
 
-// Function to get last 6 months
+/**
+ * Generates an array of the last 6 months with their dates and labels
+ * @returns {Array<{date: Date, label: string}>} Array of month objects
+ */
+
 const getLast6Months = () => {
   const months = [];
   const today = new Date();
@@ -85,7 +100,13 @@ const getLast6Months = () => {
 };
 
 const user = useSupabaseUser();
-// Fetch data and prepare chart
+
+/**
+ * Fetches credit sales and collections data from Supabase and prepares chart data
+ * Groups data by month for the last 6 months
+ * @async
+ * @returns {Promise<void>}
+ */
 const fetchChartData = async () => {
   const months = getLast6Months();
   const labels = months.map((m) => m.label);

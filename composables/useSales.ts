@@ -1,12 +1,22 @@
 import type { Inventory } from "~/types";
 const TABLE_NAME = "credit_sales";
 
+/** Error messages for different CRUD operations */
 const ERROR_MESSAGES = {
   create: "Error while adding customer information",
   read: "Error fetching customer list",
   update: "Error while updating customer information",
 };
 
+/**
+ * Vue composable for managing credit sales operations
+ * @returns {Object} Credit sales management methods and reactive references
+ * @property {Ref<Inventory[]>} creditSales - Reactive array of credit sales records
+ * @property {Function} fetchCreditSales - Fetches credit sales records for the current merchant
+ * @property {Function} updateCreditSaleRecord - Updates an existing credit sale record
+ * @property {Function} createSaleRecord - Creates a new credit sale record
+ * @property {Function} deleteCreditSaleRecord - Deletes a credit sale record
+ */
 export const useSales = () => {
   const supabase = useSupabaseClient();
   const user = useSupabaseUser();
@@ -20,7 +30,13 @@ export const useSales = () => {
     fetch: false,
   });
 
-  const fetchCreditSales = async ( limit: number = 5, state = false) => {
+  /**
+   * Fetches credit sales records for the current merchant
+   * @param {number} limit - Maximum number of records to fetch (default: 5)
+   * @param {boolean} state - Loading state flag
+   * @returns {Promise<void>}
+   */
+  const fetchCreditSales = async (limit: number = 5, state = false) => {
     loadingStates.fetch = state;
     let { data, error } = await supabase
       .from(`${TABLE_NAME}`)
@@ -52,6 +68,13 @@ export const useSales = () => {
     }
   };
 
+  /**
+   * Updates an existing credit sale record
+   * @param {Object} params - Update parameters
+   * @param {Partial<Inventory>} params.data - Credit sale data to update
+   * @param {string} params.id - ID of the credit sale record to update
+   * @returns {Promise<void>}
+   */
   const updateCreditSaleRecord = async ({
     data,
     id,
@@ -82,6 +105,12 @@ export const useSales = () => {
     });
   };
 
+  /**
+   * Creates a new credit sale record
+   * @param {Object} params - Create parameters
+   * @param {Partial<Inventory>} params.data - Credit sale data to create
+   * @returns {Promise<Inventory|null>} Created credit sale data or null if creation fails
+   */
   const createSaleRecord = async ({ data }: { data: Partial<Inventory> }) => {
     loadingStates.save = true;
     const { data: response, error } = await supabase
@@ -106,6 +135,12 @@ export const useSales = () => {
     // });
   };
 
+  /**
+   * Deletes a credit sale record by ID
+   * @param {string} id - ID of the credit sale record to delete
+   * @returns {Promise<void>}
+   * @throws {Error} If deletion fails
+   */
   const deleteCreditSaleRecord = async (id: string) => {
     loadingStates.delete = true;
     const { error } = await supabase
